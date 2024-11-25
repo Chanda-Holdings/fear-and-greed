@@ -62,3 +62,24 @@ def get(fetcher: Fetcher = None) -> FearGreedIndex:
         description=response["rating"],
         last_update=datetime.datetime.fromisoformat(response["timestamp"]),
     )
+
+def historical(fetcher: Fetcher = None) -> dict:
+    """Returns CNN's Fear & Greed Index historical data."""
+
+    if fetcher is None:
+        fetcher = Fetcher()
+
+    response = fetcher()["fear_and_greed_historical"]
+    fear_greed_historical = []
+    
+    if "data" in response:
+        historical_data = response["data"]
+        for data in historical_data:
+            fear_greed_historical.append(FearGreedIndex(
+                value=data["y"],
+                description=data["rating"],
+                last_update=datetime.datetime.fromtimestamp(data["x"] / 1000),
+            ))
+    
+    return fear_greed_historical
+        
