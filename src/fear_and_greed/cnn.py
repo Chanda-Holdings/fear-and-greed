@@ -1,19 +1,9 @@
 #! /usr/bin/env python3
 
 import datetime
-import os.path
-import tempfile
 import typing
-
 import requests
-import requests_cache
-
 from random import choice
-
-requests_cache.install_cache(
-    cache_name=os.path.join(tempfile.gettempdir(), "cnn_cache"),
-    expire_after=datetime.timedelta(minutes=1),
-)
 
 URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 
