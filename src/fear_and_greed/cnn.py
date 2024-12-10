@@ -3,6 +3,7 @@
 import datetime
 import typing
 import requests
+from random import choice
 
 
 URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
