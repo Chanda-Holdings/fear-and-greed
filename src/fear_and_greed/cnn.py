@@ -69,17 +69,21 @@ def historical(fetcher: Fetcher = None) -> dict:
     if fetcher is None:
         fetcher = Fetcher()
 
-    response = fetcher()["fear_and_greed_historical"]
+    response = fetcher().get("fear_and_greed_historical", {})
     fear_greed_historical = []
     
-    if "data" in response:
-        historical_data = response["data"]
-        for data in historical_data:
-            fear_greed_historical.append(FearGreedIndex(
-                value=data["y"],
-                description=data["rating"],
-                last_update=datetime.datetime.fromtimestamp(data["x"] / 1000),
-            ))
+    if "data" not in response:
+        raise ValueError("No historical data found")
+
+    historical_data = response["data"]
+    for data in historical_data:
+        fear_greed_historical.append(FearGreedIndex(
+            value=data["y"],
+            description=data["rating"],
+            last_update=datetime.datetime.fromtimestamp(data["x"] / 1000),
+        ))
+        
+    fear_greed_historical.sort(key=lambda x: x.last_update)
     
     return fear_greed_historical
         
