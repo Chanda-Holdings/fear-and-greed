@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 
 import datetime
-import os.path
-import tempfile
 import typing
 import requests
 from random import choice
