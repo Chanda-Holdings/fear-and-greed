@@ -53,7 +53,6 @@ The historical function provides a list of historical Fear & Greed Index values,
 ## Features
 * Fetch the current Fear & Greed Index value along with its description and timestamp.
 * Retrieve historical Fear & Greed Index data to analyze trends.
-* Uses locally [cached](https://pypi.org/project/requests-cache/) requests to CNN's website for 1 minute to minimize network usage.
 
 [![Test workflow](https://github.com/vterron/fear-and-greed/actions/workflows/test.yml/badge.svg)](https://github.com/vterron/fear-and-greed/actions/workflows/test.yml)
 [![PyPI badge](https://img.shields.io/pypi/v/fear-and-greed?color=blue)](https://pypi.org/project/fear-and-greed/)
