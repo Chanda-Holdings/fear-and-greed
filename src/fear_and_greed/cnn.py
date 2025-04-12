@@ -69,7 +69,7 @@ def historical(fetcher: Fetcher = None, start_date: datetime.datetime = None, en
     URL = URL.split("/graphdata")[0] + "/graphdata"
     if start_date is not None:
         if start_date < cnn_cutoff_date:
-            backup_data = "https://raw.githubusercontent.com/whit3rabbit/fear-greed-data/main/fear-greed-2011-2023.csv"
+            backup_data = "https://raw.githubusercontent.com/Chanda-Holdings/fear-greed-data/main/fear-greed-2011-2023.csv"
         
             csv_response = requests.get(backup_data)
             csv_response.raise_for_status()
