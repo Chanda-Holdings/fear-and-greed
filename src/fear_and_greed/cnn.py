@@ -4,6 +4,9 @@ import datetime
 import typing
 import requests
 from random import choice
+import csv
+import io
+import requests
 
 URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
 
@@ -60,11 +63,41 @@ def historical(fetcher: Fetcher = None, start_date: datetime.datetime = None, en
     if fetcher is None:
         fetcher = Fetcher()
 
+    fear_greed_historical = []
+    cnn_cutoff_date = datetime.datetime(2021, 2, 1, tzinfo=datetime.timezone.utc)
+
+    URL = URL.split("/graphdata")[0] + "/graphdata"
     if start_date is not None:
+        if start_date < cnn_cutoff_date:
+            backup_data = "https://raw.githubusercontent.com/whit3rabbit/fear-greed-data/main/fear-greed-2011-2023.csv"
+        
+            csv_response = requests.get(backup_data)
+            csv_response.raise_for_status()
+            
+            # Convert the response content to a file-like object
+            csv_file = io.StringIO(csv_response.text)
+            
+            # Read the CSV data
+            csv_reader = csv.DictReader(csv_file)
+            
+            # Convert CSV data to FearGreedIndex objects
+            for row in csv_reader:
+                date = datetime.datetime.strptime(row['Date'], '%m/%d/%Y').replace(tzinfo=datetime.timezone.utc)
+                if date >= cnn_cutoff_date or date < start_date:
+                    continue
+                
+                fear_greed_historical.append(FearGreedIndex(
+                    value=float(row['Fear Greed']),
+                    description="",
+                    # description=row['description'],
+                    last_update=date
+                ))
+            
+            start_date = cnn_cutoff_date
+
         URL = URL + "/" + start_date.strftime("%Y-%m-%d")
 
     response = fetcher().get("fear_and_greed_historical", {})
-    fear_greed_historical = []
     
     if "data" not in response:
         raise ValueError("No historical data found")

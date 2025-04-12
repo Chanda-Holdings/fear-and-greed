@@ -93,8 +93,14 @@ class FetchFearGreedIndexTest(absltest.TestCase):
         
         self.assertEqual(got[0].last_update, start_date)
         self.assertEqual(got[-1].last_update, end_date)
-        
 
+    def test_historical_with_really_distant_start_date(self):
+        start_date = datetime.datetime(2012, 1, 3, tzinfo=datetime.timezone.utc)
+        got = cnn.historical(start_date=start_date)
+        
+        assert len(got) > 0
+        
+        self.assertEqual(got[0].last_update, start_date)
 
         
         
