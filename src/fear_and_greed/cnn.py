@@ -53,11 +53,15 @@ def get(fetcher: Fetcher = None) -> FearGreedIndex:
         last_update=datetime.datetime.fromisoformat(response["timestamp"]),
     )
 
-def historical(fetcher: Fetcher = None) -> dict:
+def historical(fetcher: Fetcher = None, start_date: datetime.datetime = None, end_date: datetime.datetime = None) -> dict:
     """Returns CNN's Fear & Greed Index historical data."""
+    global URL
 
     if fetcher is None:
         fetcher = Fetcher()
+
+    if start_date is not None:
+        URL = URL + "/" + start_date.strftime("%Y-%m-%d")
 
     response = fetcher().get("fear_and_greed_historical", {})
     fear_greed_historical = []
@@ -67,10 +71,13 @@ def historical(fetcher: Fetcher = None) -> dict:
 
     historical_data = response["data"]
     for data in historical_data:
+        if end_date is not None and datetime.datetime.fromtimestamp(data["x"] / 1000, tz=datetime.timezone.utc) > end_date:
+            continue
+        
         fear_greed_historical.append(FearGreedIndex(
             value=data["y"],
             description=data["rating"],
-            last_update=datetime.datetime.fromtimestamp(data["x"] / 1000),
+            last_update=datetime.datetime.fromtimestamp(data["x"] / 1000, tz=datetime.timezone.utc),
         ))
         
     fear_greed_historical.sort(key=lambda x: x.last_update)
