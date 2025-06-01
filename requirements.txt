@@ -1,0 +1,4 @@
+requests==2.32.3
+absl-py>=0.10.0
+pytest==8.3.3
+tox>=3.24.0

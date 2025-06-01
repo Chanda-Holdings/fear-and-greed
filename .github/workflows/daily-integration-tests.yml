@@ -1,0 +1,54 @@
+name: Daily Integration Tests
+
+on:
+  schedule:
+    # Run every day at 8:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox tox-gh-actions
+        pip install -r requirements.txt
+        pip install -r requirements-test.txt
+        pip install -e .
+        
+    - name: Run tests
+      run: |
+        tox -e integration
+        tox
+        
+    - name: Notify on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issue = await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Daily integration tests failed',
+            body: `The daily integration tests failed on ${new Date().toISOString()}.
+                  
+            Check the logs for more details: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            
+            This could indicate that the CNN Fear & Greed Index API has changed its format or is currently unavailable.`,
+            labels: ['bug', 'automated']
+          });
+          console.log(`Created issue #${issue.data.number}`);

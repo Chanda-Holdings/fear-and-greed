@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: all black test build clean push
+.PHONY: all black test integration-test build clean push
 
 all: test
 
@@ -9,6 +9,10 @@ black:
 
 test:
 	tox
+
+integration-test:
+	tox -e integration
+
 build:
 	python3 -m build
 
