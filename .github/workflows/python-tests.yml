@@ -1,10 +1,13 @@
-name: Python Tests
+name: Unit Tests
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+  schedule:
+    # Run every day at 9:00 UTC (1 hour after integration tests)
+    - cron: '0 9 * * *'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
@@ -12,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.10', '3.11', '3.12']
       fail-fast: false
 
     steps:

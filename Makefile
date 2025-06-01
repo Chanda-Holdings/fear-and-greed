@@ -1,11 +1,17 @@
 SHELL := /bin/bash
 
-.PHONY: all black test integration-test build clean push
+.PHONY: all black test integration-test build clean push format setup
 
 all: test
 
 black:
 	black .
+
+format:
+	pre-commit run --all-files
+
+setup:
+	./setup.sh
 
 test:
 	tox
