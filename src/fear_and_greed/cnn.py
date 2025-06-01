@@ -43,7 +43,7 @@ class Fetcher:
         return r.json()
 
 
-def get(fetcher: Fetcher = None) -> FearGreedIndex:
+def get(fetcher: typing.Optional[Fetcher] = None) -> FearGreedIndex:
     """Returns CNN's Fear & Greed Index."""
 
     if fetcher is None:
@@ -56,7 +56,7 @@ def get(fetcher: Fetcher = None) -> FearGreedIndex:
         last_update=datetime.datetime.fromisoformat(response["timestamp"]),
     )
 
-def historical(fetcher: Fetcher = None, start_date: datetime.datetime = None, end_date: datetime.datetime = None) -> dict:
+def historical(fetcher: typing.Optional[Fetcher] = None, start_date: typing.Optional[datetime.datetime] = None, end_date: typing.Optional[datetime.datetime] = None) -> typing.List[FearGreedIndex]:
     """Returns CNN's Fear & Greed Index historical data."""
     global URL
 
