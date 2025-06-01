@@ -56,7 +56,12 @@ def get(fetcher: typing.Optional[Fetcher] = None) -> FearGreedIndex:
         last_update=datetime.datetime.fromisoformat(response["timestamp"]),
     )
 
-def historical(fetcher: typing.Optional[Fetcher] = None, start_date: typing.Optional[datetime.datetime] = None, end_date: typing.Optional[datetime.datetime] = None) -> typing.List[FearGreedIndex]:
+
+def historical(
+    fetcher: typing.Optional[Fetcher] = None,
+    start_date: typing.Optional[datetime.datetime] = None,
+    end_date: typing.Optional[datetime.datetime] = None,
+) -> typing.List[FearGreedIndex]:
     """Returns CNN's Fear & Greed Index historical data."""
     global URL
 
@@ -70,50 +75,63 @@ def historical(fetcher: typing.Optional[Fetcher] = None, start_date: typing.Opti
     if start_date is not None:
         if start_date < cnn_cutoff_date:
             backup_data = "https://raw.githubusercontent.com/Chanda-Holdings/fear-greed-data/main/fear-greed-2011-2023.csv"
-        
+
             csv_response = requests.get(backup_data)
             csv_response.raise_for_status()
-            
+
             # Convert the response content to a file-like object
             csv_file = io.StringIO(csv_response.text)
-            
+
             # Read the CSV data
             csv_reader = csv.DictReader(csv_file)
-            
+
             # Convert CSV data to FearGreedIndex objects
             for row in csv_reader:
-                date = datetime.datetime.strptime(row['Date'], '%m/%d/%Y').replace(tzinfo=datetime.timezone.utc)
+                date = datetime.datetime.strptime(row["Date"], "%m/%d/%Y").replace(
+                    tzinfo=datetime.timezone.utc
+                )
                 if date >= cnn_cutoff_date or date < start_date:
                     continue
-                
-                fear_greed_historical.append(FearGreedIndex(
-                    value=float(row['Fear Greed']),
-                    description="",
-                    # description=row['description'],
-                    last_update=date
-                ))
-            
+
+                fear_greed_historical.append(
+                    FearGreedIndex(
+                        value=float(row["Fear Greed"]),
+                        description="",
+                        # description=row['description'],
+                        last_update=date,
+                    )
+                )
+
             start_date = cnn_cutoff_date
 
         URL = URL + "/" + start_date.strftime("%Y-%m-%d")
 
     response = fetcher().get("fear_and_greed_historical", {})
-    
+
     if "data" not in response:
         raise ValueError("No historical data found")
 
     historical_data = response["data"]
     for data in historical_data:
-        if end_date is not None and datetime.datetime.fromtimestamp(data["x"] / 1000, tz=datetime.timezone.utc) > end_date:
+        if (
+            end_date is not None
+            and datetime.datetime.fromtimestamp(
+                data["x"] / 1000, tz=datetime.timezone.utc
+            )
+            > end_date
+        ):
             continue
-        
-        fear_greed_historical.append(FearGreedIndex(
-            value=data["y"],
-            description=data["rating"],
-            last_update=datetime.datetime.fromtimestamp(data["x"] / 1000, tz=datetime.timezone.utc),
-        ))
-        
+
+        fear_greed_historical.append(
+            FearGreedIndex(
+                value=data["y"],
+                description=data["rating"],
+                last_update=datetime.datetime.fromtimestamp(
+                    data["x"] / 1000, tz=datetime.timezone.utc
+                ),
+            )
+        )
+
     fear_greed_historical.sort(key=lambda x: x.last_update)
-    
+
     return fear_greed_historical
-        
