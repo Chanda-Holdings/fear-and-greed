@@ -6,6 +6,7 @@ import pathlib
 import zoneinfo
 
 from absl.testing import absltest
+
 from fear_and_greed import cnn
 
 FAKE_JSON_RESPONSE_GOLDEN_FILE = (

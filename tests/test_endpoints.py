@@ -1,10 +1,12 @@
 import datetime
-import unittest
-from unittest import skipIf
 import os
 import time
-import requests
+import unittest
 import zoneinfo
+from unittest import skipIf
+
+import requests
+
 from fear_and_greed import cnn
 
 #! /usr/bin/env python3
@@ -24,6 +26,7 @@ class FearGreedLiveEndpointTests(unittest.TestCase):
     def test_live_get(self):
         """Test that the current fear and greed index can be fetched from live endpoint."""
         result = cnn.get()
+        print(result)  # For debugging purposes
 
         self.assertIsInstance(result, cnn.FearGreedIndex)
         self.assertIsInstance(result.value, float)

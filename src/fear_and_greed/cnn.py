@@ -1,11 +1,11 @@
 #! /usr/bin/env python3
 
-import datetime
-import typing
-import requests
-from random import choice
 import csv
+import datetime
 import io
+import typing
+from random import choice
+
 import requests
 
 URL = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
@@ -51,7 +51,7 @@ def get(fetcher: typing.Optional[Fetcher] = None) -> FearGreedIndex:
 
     response = fetcher()["fear_and_greed"]
     return FearGreedIndex(
-        value=response["score"],
+        value=float(response["score"]),
         description=response["rating"],
         last_update=datetime.datetime.fromisoformat(response["timestamp"]),
     )
@@ -124,7 +124,7 @@ def historical(
 
         fear_greed_historical.append(
             FearGreedIndex(
-                value=data["y"],
+                value=float(data["y"]),
                 description=data["rating"],
                 last_update=datetime.datetime.fromtimestamp(
                     data["x"] / 1000, tz=datetime.timezone.utc
